@@ -1,16 +1,22 @@
 package com.clinicware.clinicware.services;
+import com.clinicware.clinicware.controlers.PatientController;
 import com.clinicware.clinicware.models.FeedBackMessage;
 import com.clinicware.clinicware.models.patient.PatientModel;
 import com.clinicware.clinicware.repositories.PatientRepository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 
 @Service
 public class PatientService {
@@ -32,8 +38,16 @@ public class PatientService {
         }
     }
 
-    public ResponseEntity<Object> getAllPatients(){
-        return new ResponseEntity<>(patientRepository.findAll(), HttpStatus.OK);
+    public ResponseEntity<List<PatientModel>> getAllPatients(){
+        //return new ResponseEntity<>(patientRepository.findAll(), HttpStatus.OK);
+        List<PatientModel> patientsList = patientRepository.findAll();
+        if(!patientsList.isEmpty()){
+            for(PatientModel patient : patientsList){
+                UUID id = patient.getIdPatient();
+                patient.add(linkTo(methodOn(PatientController.class).getPatient(id)).withSelfRel());
+            }
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(patientsList);
     }
 
     public ResponseEntity<?> selectPatient(UUID idPatient){
@@ -42,7 +56,7 @@ public class PatientService {
             feedBackMessage.setMessage("No valid Patient ID!");
             return new ResponseEntity<FeedBackMessage>(feedBackMessage, HttpStatus.BAD_REQUEST);
         }
-
+        selectedPatient.get().add(linkTo(methodOn(PatientController.class).getAllPatients()).withRel("Patients List"));
         return new ResponseEntity<>(patientRepository.findById(idPatient), HttpStatus.OK);  
     }
 

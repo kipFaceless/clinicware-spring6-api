@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import java.io.Serializable;
 import java.util.UUID;
 
+import org.springframework.hateoas.RepresentationModel;
+
 @Entity
 @Table(name = "TB_PATIENTS")
-public class PatientModel implements Serializable {
+public class PatientModel extends RepresentationModel<PatientModel> implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
