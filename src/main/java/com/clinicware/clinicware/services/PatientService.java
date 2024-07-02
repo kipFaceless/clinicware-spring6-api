@@ -3,12 +3,8 @@ import com.clinicware.clinicware.controlers.PatientController;
 import com.clinicware.clinicware.models.FeedBackMessage;
 import com.clinicware.clinicware.models.patient.PatientModel;
 import com.clinicware.clinicware.repositories.PatientRepository;
-
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +12,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+
 
 
 @Service
@@ -38,8 +39,9 @@ public class PatientService {
         }
     }
 
-    public ResponseEntity<List<PatientModel>> getAllPatients(){
+   /* public ResponseEntity<List<PatientModel>> getAllPatients(int page, int size, String sortBy){
         //return new ResponseEntity<>(patientRepository.findAll(), HttpStatus.OK);
+        
         List<PatientModel> patientsList = patientRepository.findAll();
         if(!patientsList.isEmpty()){
             for(PatientModel patient : patientsList){
@@ -49,6 +51,20 @@ public class PatientService {
         }
         return ResponseEntity.status(HttpStatus.OK).body(patientsList);
     }
+    */
+    public Page<PatientModel> getAllPatients(int page, int size, String sortBy) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(sortBy));
+        Page<PatientModel> patientsPage = patientRepository.findAll(pageable);
+
+        if (patientsPage.hasContent()) {
+            for (PatientModel patient : patientsPage.getContent()) {
+                UUID id = patient.getIdPatient();
+                patient.add(linkTo(methodOn(PatientController.class).getPatient(id)).withSelfRel());
+            }
+        }
+        return patientsPage;
+    }
+
 
     public ResponseEntity<?> selectPatient(UUID idPatient){
         Optional<PatientModel> selectedPatient = patientRepository.findById(idPatient);
@@ -56,7 +72,7 @@ public class PatientService {
             feedBackMessage.setMessage("No valid Patient ID!");
             return new ResponseEntity<FeedBackMessage>(feedBackMessage, HttpStatus.BAD_REQUEST);
         }
-        selectedPatient.get().add(linkTo(methodOn(PatientController.class).getAllPatients()).withRel("Patients List"));
+        selectedPatient.get().add(linkTo(methodOn(PatientController.class).getAllPatients(0, 10, "idPatient")).withRel("Patients List"));
         return new ResponseEntity<>(patientRepository.findById(idPatient), HttpStatus.OK);  
     }
 
