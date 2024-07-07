@@ -2,9 +2,10 @@ package com.clinicware.clinicware.models.patient;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
-
 import org.springframework.hateoas.RepresentationModel;
 
 @Entity
@@ -20,7 +21,10 @@ public class PatientModel extends RepresentationModel<PatientModel> implements S
     private String email;
 
     @NotBlank(message = "First name is mandatory!")
+    @Size(min = 2, max = 50)
     private String firstName;
+
+    @Size(min = 2, max = 50)
     private String lastName;
     private String dateOfBirth;
     private String gender;
@@ -30,9 +34,27 @@ public class PatientModel extends RepresentationModel<PatientModel> implements S
     private String city;
     private String state;
     private String zipCode;
+    private Date createdAt;
+    private Date updatedAt;
+
+    public Date getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public Date getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Date createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public void setUpdatedAt(Date updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    @Size(min = 5, max = 20)
     private String phoneNumber;
-
-
 
     public String getStreet() {
         return street;
@@ -98,7 +120,7 @@ public class PatientModel extends RepresentationModel<PatientModel> implements S
         this.dateOfBirth = dateOfBirth;
     }
 
-    public @NotBlank String getGender() {
+    public String getGender() {
         return gender;
     }
 
@@ -122,7 +144,7 @@ public class PatientModel extends RepresentationModel<PatientModel> implements S
         this.firstName = firstName;
     }
 
-    public @NotBlank String getLastName() {
+    public String getLastName() {
         return lastName;
     }
 

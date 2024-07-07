@@ -105,6 +105,10 @@ public class PatientService {
             return new ResponseEntity<FeedBackMessage>(feedBackMessage, HttpStatus.BAD_REQUEST);
         }
         
+        //patient.setUpdatedAt(LocalDate.now());
+        //LocalDate dataAtual = LocalDate.now();
+        //ZonedDateTime dataHoraAtualComFuso = ZonedDateTime.now();
+        //LocalDateTime dataHoraAtual = LocalDateTime.now();
         PatientModel updatedPatient = patientRepository.save(patient);
         return new ResponseEntity<PatientModel>(updatedPatient, HttpStatus.OK);
     }
