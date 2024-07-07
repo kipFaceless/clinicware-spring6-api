@@ -11,6 +11,6 @@ VOLUME /tmp
 EXPOSE 8080
 COPY --from=build /target/clinicware-0.0.1-SNAPSHOT.jar clinicware.jar
 #COPY target/clinicware-0.0.1-SNAPSHOT.jar clinicware.jar
-ENTRYPOINT ["java","-jar","/clinicware.jar"]
+ENTRYPOINT ["java","-jar","clinicware.jar"]
 
 
