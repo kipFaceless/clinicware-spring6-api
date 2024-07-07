@@ -9,7 +9,7 @@ RUN apt-get install maven -y
 FROM openjdk:17-jdk-slim
 VOLUME /tmp
 EXPOSE 8080
-COPY --from=build /target/clinicware-0.0.1-SNAPSHOT.jar clinicware.jar
+COPY --from=build /clinicware-api/target/clinicware-0.0.1-SNAPSHOT.jar clinicware.jar
 #COPY target/clinicware-0.0.1-SNAPSHOT.jar clinicware.jar
 ENTRYPOINT ["java","-jar","clinicware.jar"]
 
